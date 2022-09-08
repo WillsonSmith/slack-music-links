@@ -47,6 +47,10 @@
     "@shoelace-style/shoelace": "^2.0.0-beta.73",
     "@slack/web-api": "^6.7.2",
     "javascript-color-gradient": "^2.4.4",
-    "lit": "^2.2.4"
+    "jsonwebtoken": "^8.5.1",
+    "lit": "^2.2.4",
+    "node-fetch": "^2.6.7",
+    "spotify-web-api-node": "^5.0.2",
+    "youtube-music-api": "^1.0.6"
   }
 }
