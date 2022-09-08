@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "serve": "http-server web/",
-    "serve:netlify": "netlify dev",
+    "serve:netlify": "netlify dev --live",
     "dev": "npm run web:watch",
     "web:build:prod": "concurrently \"node web/build/index.js --minify \"",
     "web:build": "concurrently \"node web/build/index.js\"",
