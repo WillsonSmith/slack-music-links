@@ -45,14 +45,56 @@ async function handleLinkShared(event, token) {
     const { links } = event;
 
     const url = new URL(links[0].url);
-    if (url.hostname === `music.apple.com`)
-      handleAppleMusicRequest(event, token, url);
+    if (url.hostname === `music.apple.com`) handleAppleMusicRequest(event, url);
+    if (url.hostname === `open.spotify.com` && url.href.includes(`track`))
+      handleSpotifyRequest(event, url);
   } catch (error) {
     console.log(error);
   }
 }
 
-async function handleAppleMusicRequest(event, token, url) {
+async function handleSpotifyRequest(event, url) {
+  const user = await wc.users.info({ user: event.user });
+  const {
+    name: username,
+    profile: { image_original: avatar_url },
+  } = user.user;
+
+  const trackId = url.pathname.split(`/`)[2];
+  const spotifyApi = new SpotifyAPI();
+  const { name, artist } = await spotifyApi.getTrack(trackId);
+
+  const youtubeApi = new YouTubeMusicAPI();
+  const youtubeLink = await youtubeApi.search(
+    `${name}, ${artist.split(`&`).join()}`
+  );
+  const appleMusicApi = new AppleMusicAPI();
+  const appleMusicLink = await appleMusicApi.search(`${name} ${artist}`);
+
+  wc.chat
+    .postMessage({
+      token: process.env.SLACK_TOKEN,
+      channel: event.channel,
+      thread_ts: event.message_ts,
+      text: youtubeLink,
+      username,
+      icon_url: avatar_url,
+    })
+    .catch(console.log);
+
+  wc.chat
+    .postMessage({
+      token: process.env.SLACK_TOKEN,
+      channel: event.channel,
+      thread_ts: event.message_ts,
+      text: appleMusicLink,
+      username,
+      icon_url: avatar_url,
+    })
+    .catch(console.log);
+}
+
+async function handleAppleMusicRequest(event, url) {
   const user = await wc.users.info({ user: event.user });
   const {
     name: username,
@@ -73,6 +115,9 @@ async function handleAppleMusicRequest(event, token, url) {
   const youtubeLink = await youtubeApi.search(
     `${name}, ${artist.split(`&`).join()}`
   );
+  const spotifyApi = new SpotifyAPI();
+  const spotifyLink = await spotifyApi.search(`${name} artist:${artist}`);
+
   wc.chat.postMessage({
     token: process.env.SLACK_TOKEN,
     channel: event.channel,
@@ -82,8 +127,6 @@ async function handleAppleMusicRequest(event, token, url) {
     icon_url: avatar_url,
   });
 
-  const spotifyApi = new SpotifyAPI();
-  const spotifyLink = await spotifyApi.search(`${name} artist:${artist}`);
   wc.chat.postMessage({
     token: process.env.SLACK_TOKEN,
     channel: event.channel,
@@ -102,6 +145,14 @@ class SpotifyAPI {
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
       redirectUri: `https://willsonsmith.com`,
     });
+  }
+
+  async getTrack(id) {
+    await this.token();
+    const track = await this.api.getTrack(id);
+    const name = track.body.name;
+    const artist = track.body.artists[0].name;
+    return { name, artist };
   }
 
   async search(query) {
@@ -156,6 +207,28 @@ class AppleMusicAPI {
     const response = await fetch(url, { headers });
     const data = await response.json();
     return data;
+  }
+
+  async search(query) {
+    const searchParams = new URLSearchParams([[`term`, query]]);
+    const response = await fetch(
+      `https://api.music.apple.com/v1/catalog/ca/search?${searchParams}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this._token}`,
+        },
+      }
+    );
+    const data = await response.json();
+    const {
+      results: {
+        songs: { data: songs },
+      },
+    } = data;
+    const {
+      attributes: { url },
+    } = songs[0];
+    return url;
   }
 
   token() {
