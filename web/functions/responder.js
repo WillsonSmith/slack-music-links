@@ -41,17 +41,17 @@ export async function handler(requestEvent) {
 }
 
 async function handleLinkShared(event, token) {
-  try {
-    const { links } = event;
+  // try {
+  const { links } = event;
 
-    const url = new URL(links[0].url);
-    if (url.hostname === `music.apple.com`) handleAppleMusicRequest(event, url);
-    if (url.hostname === `open.spotify.com` && url.href.includes(`track`))
-      handleSpotifyRequest(event, url);
-    if (url.hostname === `music.youtube.com`) handleYoutubeRequest(event, url);
-  } catch (error) {
-    console.log(error);
-  }
+  const url = new URL(links[0].url);
+  if (url.hostname === `music.apple.com`) handleAppleMusicRequest(event, url);
+  if (url.hostname === `open.spotify.com` && url.href.includes(`track`))
+    handleSpotifyRequest(event, url);
+  if (url.hostname === `music.youtube.com`) handleYoutubeRequest(event, url);
+  // } catch (error) {
+  //   console.log(error);
+  // }
 }
 
 async function handleYoutubeRequest(event, url) {
@@ -72,27 +72,25 @@ async function handleYoutubeRequest(event, url) {
   const appleMusicApi = new AppleMusicAPI();
   const appleMusicLink = await appleMusicApi.search(`${name} ${artist}`);
 
-  wc.chat
-    .postMessage({
-      token: process.env.SLACK_TOKEN,
-      channel: event.channel,
-      thread_ts: event.message_ts,
-      text: appleMusicLink,
-      username,
-      icon_url: avatar_url,
-    })
-    .catch(console.log);
+  wc.chat.postMessage({
+    token: process.env.SLACK_TOKEN,
+    channel: event.channel,
+    thread_ts: event.message_ts,
+    text: appleMusicLink,
+    username,
+    icon_url: avatar_url,
+  });
+  // .catch(console.log);
 
-  wc.chat
-    .postMessage({
-      token: process.env.SLACK_TOKEN,
-      channel: event.channel,
-      thread_ts: event.message_ts,
-      text: spotifyLink,
-      username,
-      icon_url: avatar_url,
-    })
-    .catch(console.log);
+  wc.chat.postMessage({
+    token: process.env.SLACK_TOKEN,
+    channel: event.channel,
+    thread_ts: event.message_ts,
+    text: spotifyLink,
+    username,
+    icon_url: avatar_url,
+  });
+  // .catch(console.log);
 }
 
 async function handleSpotifyRequest(event, url) {
@@ -113,27 +111,25 @@ async function handleSpotifyRequest(event, url) {
   const appleMusicApi = new AppleMusicAPI();
   const appleMusicLink = await appleMusicApi.search(`${name} ${artist}`);
 
-  wc.chat
-    .postMessage({
-      token: process.env.SLACK_TOKEN,
-      channel: event.channel,
-      thread_ts: event.message_ts,
-      text: youtubeLink,
-      username,
-      icon_url: avatar_url,
-    })
-    .catch(console.log);
+  wc.chat.postMessage({
+    token: process.env.SLACK_TOKEN,
+    channel: event.channel,
+    thread_ts: event.message_ts,
+    text: youtubeLink,
+    username,
+    icon_url: avatar_url,
+  });
+  // .catch(console.log);
 
-  wc.chat
-    .postMessage({
-      token: process.env.SLACK_TOKEN,
-      channel: event.channel,
-      thread_ts: event.message_ts,
-      text: appleMusicLink,
-      username,
-      icon_url: avatar_url,
-    })
-    .catch(console.log);
+  wc.chat.postMessage({
+    token: process.env.SLACK_TOKEN,
+    channel: event.channel,
+    thread_ts: event.message_ts,
+    text: appleMusicLink,
+    username,
+    icon_url: avatar_url,
+  });
+  // .catch(console.log);
 }
 
 async function handleAppleMusicRequest(event, url) {
@@ -225,28 +221,28 @@ class YouTubeMusicAPI {
   }
 
   async getTrack(id) {
-    try {
-      await this.api.initalize();
-      const result = await this.api.search(id, `song`);
-      const song = result.content[0];
-      const {
-        name,
-        artist: { name: artist },
-        album,
-      } = song;
-      return { name, artist, album };
-    } catch (error) {}
+    // try {
+    await this.api.initalize();
+    const result = await this.api.search(id, `song`);
+    const song = result.content[0];
+    const {
+      name,
+      artist: { name: artist },
+      album,
+    } = song;
+    return { name, artist, album };
+    // } catch (error) {}
   }
 
   async search(term) {
-    try {
-      await this.api.initalize();
-      const result = await this.api.search(term, `song`);
-      const videoId = result.content[0].videoId;
-      return `https://music.youtube.com/watch?v=${videoId}`;
-    } catch (error) {
-      console.log(error);
-    }
+    // try {
+    await this.api.initalize();
+    const result = await this.api.search(term, `song`);
+    const videoId = result.content[0].videoId;
+    return `https://music.youtube.com/watch?v=${videoId}`;
+    // } catch (error) {
+    //   console.log(error);
+    // }
   }
 }
 
