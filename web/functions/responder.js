@@ -7,14 +7,13 @@ import YoutubeMusicApi from "youtube-music-api";
 
 const SLACK_TOKEN = process.env.SLACK_TOKEN;
 
-let wc;
+const wc = new WebClient(SLACK_TOKEN);
 const {
   KID: kid,
   ISS: iss,
   MUSIC_PRIVATE_KEY: APPLE_MUSIC_PRIVATE_KEY,
 } = process.env;
 export async function handler(requestEvent) {
-  wc = new WebClient(SLACK_TOKEN);
   console.log(`Received handler event: ${JSON.stringify(requestEvent)}`);
   try {
     if (!requestEvent.body) {
@@ -70,7 +69,7 @@ async function handleYoutubeRequest(event, url) {
   //   name: username,
   //   profile: { image_original: avatar_url },
   // } = user.user;
-
+  console.log(`wc`, wc);
   const trackIdentifier = url.searchParams.get(`v`);
 
   const api = new YouTubeMusicAPI();
