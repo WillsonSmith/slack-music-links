@@ -64,11 +64,11 @@ async function handleLinkShared(event, token) {
 
 async function handleYoutubeRequest(event, url) {
   console.log(`Received youtube request: ${JSON.stringify(event)}`);
-  const user = await wc.users.info({ user: event.user, token: SLACK_TOKEN });
-  const {
-    name: username,
-    profile: { image_original: avatar_url },
-  } = user.user;
+  // const user = await wc.users.info({ user: event.user, token: SLACK_TOKEN });
+  // const {
+  //   name: username,
+  //   profile: { image_original: avatar_url },
+  // } = user.user;
   const trackIdentifier = url.searchParams.get(`v`);
 
   const api = new YouTubeMusicAPI();
