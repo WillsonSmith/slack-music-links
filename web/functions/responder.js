@@ -32,16 +32,16 @@ export async function handler(requestEvent) {
       };
     }
     /*
-    getUrl(event)
+    getUrl({event})
       .then(searchForTrack)
       .then(getLinks)
       .then(postMessage)
     */
 
-    const { event, token } = body;
+    const { event } = body;
     if (event) {
       const { type } = event;
-      if (type === `link_shared`) handleLinkShared(event, token);
+      if (type === `link_shared`) handleLinkShared(event);
     }
 
     // return {
@@ -53,7 +53,7 @@ export async function handler(requestEvent) {
   }
 }
 
-async function handleLinkShared(event, token) {
+async function handleLinkShared(event) {
   console.log(`Received link shared event: ${JSON.stringify(event)}`);
   // try {
   const { links } = event;
