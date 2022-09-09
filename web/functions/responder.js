@@ -48,9 +48,51 @@ async function handleLinkShared(event, token) {
     if (url.hostname === `music.apple.com`) handleAppleMusicRequest(event, url);
     if (url.hostname === `open.spotify.com` && url.href.includes(`track`))
       handleSpotifyRequest(event, url);
+    if (url.hostname === `music.youtube.com`) handleYoutubeRequest(event, url);
   } catch (error) {
     console.log(error);
   }
+}
+
+async function handleYoutubeRequest(event, url) {
+  const user = await wc.users.info({ user: event.user });
+  const {
+    name: username,
+    profile: { image_original: avatar_url },
+  } = user.user;
+
+  const trackIdentifier = url.searchParams.get(`v`);
+
+  const api = new YouTubeMusicAPI();
+  const { name, artist, album } = await api.getTrack(trackIdentifier);
+
+  const spotifyApi = new SpotifyAPI();
+  const spotifyLink = await spotifyApi.search(`${name} artist:${artist}`);
+
+  const appleMusicApi = new AppleMusicAPI();
+  const appleMusicLink = await appleMusicApi.search(`${name} ${artist}`);
+
+  wc.chat
+    .postMessage({
+      token: process.env.SLACK_TOKEN,
+      channel: event.channel,
+      thread_ts: event.message_ts,
+      text: appleMusicLink,
+      username,
+      icon_url: avatar_url,
+    })
+    .catch(console.log);
+
+  wc.chat
+    .postMessage({
+      token: process.env.SLACK_TOKEN,
+      channel: event.channel,
+      thread_ts: event.message_ts,
+      text: spotifyLink,
+      username,
+      icon_url: avatar_url,
+    })
+    .catch(console.log);
 }
 
 async function handleSpotifyRequest(event, url) {
@@ -180,6 +222,20 @@ class SpotifyAPI {
 class YouTubeMusicAPI {
   constructor() {
     this.api = new YoutubeMusicApi();
+  }
+
+  async getTrack(id) {
+    try {
+      await this.api.initalize();
+      const result = await this.api.search(id, `song`);
+      const song = result.content[0];
+      const {
+        name,
+        artist: { name: artist },
+        album,
+      } = song;
+      return { name, artist, album };
+    } catch (error) {}
   }
 
   async search(term) {
