@@ -63,6 +63,7 @@ async function handleLinkShared(event, token) {
 async function handleYoutubeRequest(event, url) {
   console.log(`Received youtube request: ${JSON.stringify(event)}`);
   const user = await wc.users.info({ user: event.user });
+  console.log(`if it doesn't get here it's a problem`);
   const {
     name: username,
     profile: { image_original: avatar_url },
@@ -78,7 +79,6 @@ async function handleYoutubeRequest(event, url) {
 
   const appleMusicApi = new AppleMusicAPI();
   const appleMusicLink = await appleMusicApi.search(`${name} ${artist}`);
-  console.log(`wc`, process.env.SLACK_TOKEN);
   wc.chat.postMessage({
     token: process.env.SLACK_TOKEN,
     channel: event.channel,
