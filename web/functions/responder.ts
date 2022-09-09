@@ -158,11 +158,15 @@ class SpotifyAPI {
   }
 
   async getTrack(id) {
-    await this.token();
-    const track = await this.api.getTrack(id);
-    const title = track.body.name;
-    const artist = track.body.artists[0].name;
-    return { title, artist, from: `spotify` };
+    try {
+      await this.token();
+      const track = await this.api.getTrack(id);
+      const title = track.body.name;
+      const artist = track.body.artists[0].name;
+      return { title, artist, from: `spotify` };
+    } catch (error) {
+      console.log(`Failed to get track from Apple Music`, error);
+    }
   }
 
   async search(query) {
@@ -195,14 +199,18 @@ class YoutubeMusicAPI {
   }
 
   async getTrack(id) {
-    await this.api.initalize();
-    const result = await this.api.search(id, `song`);
-    const song = result.content[0];
-    const {
-      name: title,
-      artist: { name: artist },
-    } = song;
-    return { title, artist, from: `youtube` };
+    try {
+      await this.api.initalize();
+      const result = await this.api.search(id, `song`);
+      const song = result.content[0];
+      const {
+        name: title,
+        artist: { name: artist },
+      } = song;
+      return { title, artist, from: `youtube` };
+    } catch (error) {
+      console.log(`Failed to get track from Apple Music`, error);
+    }
   }
 
   async search(term) {
@@ -231,7 +239,7 @@ class AppleMusicAPI {
       const track = data[0];
       const { attributes } = track;
       const { name: title, artistName: artist } = attributes;
-      return { title, artist, from: `apple music` };
+      return { title, artist, from: `apple` };
     } catch (error) {
       console.log(`Failed to get track from Apple Music`, error);
     }
