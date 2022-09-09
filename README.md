@@ -1,3 +1,3 @@
-## Yuzu 🍋
-[DEMO @ https://yuzu-demo.netlify.app/](https://yuzu-demo.netlify.app/)
-A simple, minimalistic, and fast web application framework built on web components.
+A WIP Slack Bot built on Netlify Functions.
+
+Listens for link send events from Spotify, Apple Music, and YouTube Music and responds with links to those songs from the other two services.
