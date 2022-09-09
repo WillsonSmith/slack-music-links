@@ -11,8 +11,8 @@ const {
   ISS: iss,
   MUSIC_PRIVATE_KEY: APPLE_MUSIC_PRIVATE_KEY,
 } = process.env;
-
 export async function handler(requestEvent) {
+  console.log(`Received handler event: ${JSON.stringify(requestEvent)}`);
   try {
     if (!requestEvent.body) {
       return {
