@@ -69,17 +69,17 @@ async function handleYoutubeRequest(event, url) {
   //   name: username,
   //   profile: { image_original: avatar_url },
   // } = user.user;
-  console.log(`wc`, wc);
   const trackIdentifier = url.searchParams.get(`v`);
 
   const api = new YouTubeMusicAPI();
   const { name, artist, album } = await api.getTrack(trackIdentifier);
-
+  console.log(`yt fetched`);
   const spotifyApi = new SpotifyAPI();
   const spotifyLink = await spotifyApi.search(`${name} artist:${artist}`);
-
+  console.log(`sp fetched`);
   const appleMusicApi = new AppleMusicAPI();
   const appleMusicLink = await appleMusicApi.search(`${name} ${artist}`);
+  console.log(`am fetched`);
   try {
     console.log(`posting message for apple music`);
     await wc.chat.postMessage({
