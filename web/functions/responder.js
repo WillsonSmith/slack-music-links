@@ -169,21 +169,21 @@ async function handleAppleMusicRequest(event, url) {
     attributes: { name, artistName: artist },
   } = track;
 
-  const youtubeApi = new YouTubeMusicAPI();
-  const youtubeLink = await youtubeApi.search(
-    `${name}, ${artist.split(`&`).join()}`
-  );
+  // const youtubeApi = new YouTubeMusicAPI();
+  // const youtubeLink = await youtubeApi.search(
+  //   `${name}, ${artist.split(`&`).join()}`
+  // );
   const spotifyApi = new SpotifyAPI();
   const spotifyLink = await spotifyApi.search(`${name} artist:${artist}`);
 
-  wc.chat.postMessage({
-    token: SLACK_TOKEN,
-    channel: event.channel,
-    thread_ts: event.message_ts,
-    text: youtubeLink,
-    username,
-    icon_url: avatar_url,
-  });
+  // wc.chat.postMessage({
+  //   token: SLACK_TOKEN,
+  //   channel: event.channel,
+  //   thread_ts: event.message_ts,
+  //   text: youtubeLink,
+  //   username,
+  //   icon_url: avatar_url,
+  // });
 
   wc.chat.postMessage({
     token: SLACK_TOKEN,
