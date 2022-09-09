@@ -78,7 +78,7 @@ async function handleYoutubeRequest(event, url) {
 
   const appleMusicApi = new AppleMusicAPI();
   const appleMusicLink = await appleMusicApi.search(`${name} ${artist}`);
-
+  console.log(`wc`, process.env.SLACK_TOKEN);
   wc.chat.postMessage({
     token: process.env.SLACK_TOKEN,
     channel: event.channel,
