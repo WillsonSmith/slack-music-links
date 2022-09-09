@@ -7,13 +7,14 @@ import YoutubeMusicApi from "youtube-music-api";
 
 const SLACK_TOKEN = process.env.SLACK_TOKEN;
 
-const wc = new WebClient(SLACK_TOKEN);
+let wc;
 const {
   KID: kid,
   ISS: iss,
   MUSIC_PRIVATE_KEY: APPLE_MUSIC_PRIVATE_KEY,
 } = process.env;
 export async function handler(requestEvent) {
+  wc = new WebClient(SLACK_TOKEN);
   console.log(`Received handler event: ${JSON.stringify(requestEvent)}`);
   try {
     if (!requestEvent.body) {
