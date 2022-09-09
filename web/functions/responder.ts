@@ -101,8 +101,7 @@ function getTrackId(service: string, url: URL): string {
 }
 
 async function findTracks({ title, artist, from }) {
-  // const tracksToFind = [`spotify`, `apple`, `youtube`].filter(
-  const tracksToFind = [`spotify`, `apple`].filter(
+  const tracksToFind = [`apple`, `youtube`].filter(
     (service) => service !== from
   );
   return Promise.all(
