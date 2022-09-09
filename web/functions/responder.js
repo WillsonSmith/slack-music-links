@@ -38,10 +38,10 @@ export async function handler(requestEvent) {
       if (type === `link_shared`) handleLinkShared(event, token);
     }
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ hello: `world` }),
-    };
+    // return {
+    //   statusCode: 200,
+    //   body: JSON.stringify({ hello: `world` }),
+    // };
   } catch (error) {
     console.log(error);
   }
@@ -64,49 +64,48 @@ async function handleLinkShared(event, token) {
 
 async function handleYoutubeRequest(event, url) {
   console.log(`Received youtube request: ${JSON.stringify(event)}`);
-  // const user = await wc.users.info({ user: event.user, token: SLACK_TOKEN });
-  // const {
-  //   name: username,
-  //   profile: { image_original: avatar_url },
-  // } = user.user;
+  const user = await wc.users.info({ user: event.user, token: SLACK_TOKEN });
+  const {
+    name: username,
+    profile: { image_original: avatar_url },
+  } = user.user;
   const trackIdentifier = url.searchParams.get(`v`);
 
   const api = new YouTubeMusicAPI();
-  console.log(`promise 4 yt`);
-  api.getTrack(trackIdentifier).then((data) => {
-    console.log(data);
-  });
-  console.log(`await 4 yt`);
   const { name, artist, album } = await api.getTrack(trackIdentifier);
   const spotifyApi = new SpotifyAPI();
-  spotifyApi
-    .search(`${name} artist:${artist}`)
-    .then((link) => console.log(`spotify: ${link}`));
   const spotifyLink = await spotifyApi.search(`${name} artist:${artist}`);
-  console.log(`spotify (await): ${spotifyLink}`);
-  // const appleMusicApi = new AppleMusicAPI();
-  // const appleMusicLink = await appleMusicApi.search(`${name} ${artist}`);
+  const appleMusicApi = new AppleMusicAPI();
+  const appleMusicLink = await appleMusicApi.search(`${name} ${artist}`);
 
-  // console.log(`posting message for apple music`);
-  // await wc.chat.postMessage({
-  //   token: SLACK_TOKEN,
-  //   channel: event.channel,
-  //   thread_ts: event.message_ts,
-  //   text: appleMusicLink,
-  //   username,
-  //   icon_url: avatar_url,
-  // });
+  console.log(`posting message for apple music`);
+  try {
+    await wc.chat.postMessage({
+      token: SLACK_TOKEN,
+      channel: event.channel,
+      thread_ts: event.message_ts,
+      text: appleMusicLink,
+      username,
+      icon_url: avatar_url,
+    });
+  } catch (error) {
+    console.log(error, `error posting message for apple music`);
+  }
 
-  // console.log(`posting message for spotify`);
-  // await wc.chat.postMessage({
-  //   token: SLACK_TOKEN,
-  //   channel: event.channel,
-  //   thread_ts: event.message_ts,
-  //   text: spotifyLink,
-  //   username,
-  //   icon_url: avatar_url,
-  // });
-
+  console.log(`posting message for spotify`);
+  try {
+    console.log(`s, un`, username);
+    await wc.chat.postMessage({
+      token: SLACK_TOKEN,
+      channel: event.channel,
+      thread_ts: event.message_ts,
+      text: spotifyLink,
+      username,
+      icon_url: avatar_url,
+    });
+  } catch (error) {
+    console.log(error, `error posting message for apple music`);
+  }
   // .catch(console.log);
 }
 
@@ -243,22 +242,18 @@ class YouTubeMusicAPI {
 
   async getTrack(id) {
     // try {
-    return new Promise((resolve, reject) => {
-      this.api.initalize().then(() => {
-        // await this.api.initalize();
-        this.api.search(id, `song`).then((result) => {
-          console.log(`yt search`);
-          const song = result.content[0];
-          const {
-            name,
-            artist: { name: artist },
-            album,
-          } = song;
-          console.log(name, artist, album, `about to resolve`);
-          resolve({ name, artist, album });
-        });
-      });
-    });
+    console.log(`yt init pre`, this.api, YoutubeMusicApi);
+    await this.api.initalize();
+    console.log(`yt init post`);
+    const result = await this.api.search(id, `song`);
+    console.log(`yt search`);
+    const song = result.content[0];
+    const {
+      name,
+      artist: { name: artist },
+      album,
+    } = song;
+    return { name, artist, album };
     // } catch (error) {}
   }
 
