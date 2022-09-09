@@ -80,7 +80,7 @@ async function handleYoutubeRequest(event, url) {
 
   const appleMusicApi = new AppleMusicAPI();
   const appleMusicLink = await appleMusicApi.search(`${name} ${artist}`);
-  wc.chat.postMessage({
+  await wc.chat.postMessage({
     token: SLACK_TOKEN,
     channel: event.channel,
     thread_ts: event.message_ts,
@@ -90,7 +90,7 @@ async function handleYoutubeRequest(event, url) {
   });
   // .catch(console.log);
 
-  wc.chat.postMessage({
+  await wc.chat.postMessage({
     token: SLACK_TOKEN,
     channel: event.channel,
     thread_ts: event.message_ts,
