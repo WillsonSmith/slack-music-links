@@ -64,16 +64,11 @@ async function handleLinkShared(event, token) {
 
 async function handleYoutubeRequest(event, url) {
   console.log(`Received youtube request: ${JSON.stringify(event)}`);
-  let user;
-  try {
-    user = await wc.users.info({ user: event.user, token: SLACK_TOKEN });
-  } catch (error) {
-    console.log(error);
-  }
-  const {
-    name: username,
-    profile: { image_original: avatar_url },
-  } = user.user;
+  // const user = await wc.users.info({ user: event.user, token: SLACK_TOKEN });
+  // const {
+  //   name: username,
+  //   profile: { image_original: avatar_url },
+  // } = user.user;
 
   const trackIdentifier = url.searchParams.get(`v`);
 
@@ -90,8 +85,8 @@ async function handleYoutubeRequest(event, url) {
     channel: event.channel,
     thread_ts: event.message_ts,
     text: appleMusicLink,
-    username,
-    icon_url: avatar_url,
+    // username,
+    // icon_url: avatar_url,
   });
   // .catch(console.log);
 
@@ -100,8 +95,8 @@ async function handleYoutubeRequest(event, url) {
     channel: event.channel,
     thread_ts: event.message_ts,
     text: spotifyLink,
-    username,
-    icon_url: avatar_url,
+    // username,
+    // icon_url: avatar_url,
   });
   // .catch(console.log);
 }
