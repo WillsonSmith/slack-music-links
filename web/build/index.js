@@ -36,11 +36,12 @@ readdir(`${webPath}/javascript/routes`).then((files) => {
   esbuild({
     bundle: true,
     entryPoints: [`${webPath}/javascript/boot.js`, ...bundles],
-    outdir: distPath,
     format: `esm`,
     minify: true,
-    watch: flags.watch,
+    outdir: distPath,
     sourcemap: true,
+    splitting: true,
+    watch: flags.watch,
   });
 });
 
