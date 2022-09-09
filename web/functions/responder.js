@@ -38,10 +38,10 @@ export async function handler(requestEvent) {
       if (type === `link_shared`) handleLinkShared(event, token);
     }
 
-    // return {
-    //   statusCode: 200,
-    //   body: JSON.stringify({ hello: `world` }),
-    // };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ hello: `world` }),
+    };
   } catch (error) {
     console.log(error);
   }
