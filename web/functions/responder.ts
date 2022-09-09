@@ -4,6 +4,9 @@ import jwt from "jsonwebtoken";
 import fetch from "node-fetch";
 
 import SpotifyWebApi from "spotify-web-api-node";
+/** NOTE
+ * SpotifyWebApi uses `Buffer` which has been deprecated.
+ */
 import YoutubeMusicApi from "youtube-music-api";
 
 const SLACK_TOKEN = process.env.SLACK_TOKEN;
@@ -101,7 +104,7 @@ function getTrackId(service: string, url: URL): string {
 }
 
 async function findTracks({ title, artist, from }) {
-  const tracksToFind = [`apple`, `youtube`].filter(
+  const tracksToFind = [`spotify`, `apple`, `youtube`].filter(
     (service) => service !== from
   );
   return Promise.all(
