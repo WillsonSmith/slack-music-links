@@ -101,7 +101,8 @@ function getTrackId(service: string, url: URL): string {
 }
 
 async function findTracks({ title, artist, from }) {
-  const tracksToFind = [`spotify`, `apple`, `youtube`].filter(
+  // const tracksToFind = [`spotify`, `apple`, `youtube`].filter(
+  const tracksToFind = [`spotify`, `apple`].filter(
     (service) => service !== from
   );
   return Promise.all(
@@ -223,6 +224,7 @@ class YoutubeMusicAPI {
 
 class AppleMusicAPI {
   _token: string;
+  baseUrl: string = `https://api.music.apple.com/v1/catalog/ca`;
   constructor() {
     console.log(`Initializing Apple Music API`);
     this._token = this.token();
@@ -230,7 +232,7 @@ class AppleMusicAPI {
 
   async getTrack(trackIdentifier) {
     try {
-      const url = `https://api.music.apple.com/v1/catalog/ca/songs/${trackIdentifier}`;
+      const url = `${this.baseUrl}/songs/${trackIdentifier}`;
       const headers = {
         Authorization: `Bearer ${this._token}`,
       };
@@ -247,14 +249,11 @@ class AppleMusicAPI {
 
   async search(query) {
     const searchParams = new URLSearchParams([[`term`, query]]);
-    const response = await fetch(
-      `https://api.music.apple.com/v1/catalog/ca/search?${searchParams}`,
-      {
-        headers: {
-          Authorization: `Bearer ${this._token}`,
-        },
-      }
-    );
+    const response = await fetch(`${this.baseUrl}/search?${searchParams}`, {
+      headers: {
+        Authorization: `Bearer ${this._token}`,
+      },
+    });
     const data = await response.json();
     const {
       results: {
