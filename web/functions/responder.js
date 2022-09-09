@@ -244,8 +244,11 @@ class YouTubeMusicAPI {
 
   async getTrack(id) {
     // try {
+    console.log(`yt init pre`);
     await this.api.initalize();
+    console.log(`yt init post`);
     const result = await this.api.search(id, `song`);
+    console.log(`yt search`);
     const song = result.content[0];
     const {
       name,
