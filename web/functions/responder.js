@@ -13,34 +13,40 @@ const {
 } = process.env;
 
 export async function handler(requestEvent) {
-  if (!requestEvent.body) {
-    return {
-      statusCode: 400,
-      body: `Missing body`,
-    };
-  }
+  try {
+    if (!requestEvent.body) {
+      return {
+        statusCode: 400,
+        body: `Missing body`,
+      };
+    }
 
-  const body = JSON.parse(requestEvent.body);
-  if (body.challenge) {
+    const body = JSON.parse(requestEvent.body);
+    if (body.challenge) {
+      console.log(`Received challenge: ${body.challenge}`);
+      return {
+        statusCode: 200,
+        body: body.challenge,
+      };
+    }
+
+    const { event, token } = body;
+    if (event) {
+      const { type } = event;
+      if (type === `link_shared`) handleLinkShared(event, token);
+    }
+
     return {
       statusCode: 200,
-      body: body.challenge,
+      body: JSON.stringify({ hello: `world` }),
     };
+  } catch (error) {
+    console.log(error);
   }
-
-  const { event, token } = body;
-  if (event) {
-    const { type } = event;
-    if (type === `link_shared`) handleLinkShared(event, token);
-  }
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ hello: `world` }),
-  };
 }
 
 async function handleLinkShared(event, token) {
+  console.log(`Received link shared event: ${JSON.stringify(event)}`);
   // try {
   const { links } = event;
 
@@ -55,6 +61,7 @@ async function handleLinkShared(event, token) {
 }
 
 async function handleYoutubeRequest(event, url) {
+  console.log(`Received youtube request: ${JSON.stringify(event)}`);
   const user = await wc.users.info({ user: event.user });
   const {
     name: username,
@@ -94,6 +101,7 @@ async function handleYoutubeRequest(event, url) {
 }
 
 async function handleSpotifyRequest(event, url) {
+  console.log(`Received spotify request: ${JSON.stringify(event)}`);
   const user = await wc.users.info({ user: event.user });
   const {
     name: username,
@@ -133,6 +141,7 @@ async function handleSpotifyRequest(event, url) {
 }
 
 async function handleAppleMusicRequest(event, url) {
+  console.log(`Received apple music request: ${JSON.stringify(event)}`);
   const user = await wc.users.info({ user: event.user });
   const {
     name: username,
@@ -177,6 +186,7 @@ async function handleAppleMusicRequest(event, url) {
 
 class SpotifyAPI {
   constructor() {
+    console.log(`Initializing Spotify API`);
     this._token = undefined;
     this.api = new SpotifyWebApi({
       clientId: process.env.SPOTIFY_CLIENT_ID,
@@ -217,6 +227,7 @@ class SpotifyAPI {
 
 class YouTubeMusicAPI {
   constructor() {
+    console.log(`Initializing YouTube Music API`);
     this.api = new YoutubeMusicApi();
   }
 
@@ -248,6 +259,7 @@ class YouTubeMusicAPI {
 
 class AppleMusicAPI {
   constructor() {
+    console.log(`Initializing Apple Music API`);
     this._token = this.token();
   }
 
