@@ -36,7 +36,7 @@ const handler: Handler = async (requestEvent) => {
     const service = getServiceFromUrl(url);
     const trackId = getTrackId(service, url);
 
-    getTrack({ id: trackId, service })
+    await getTrack({ id: trackId, service })
       .then(findTracks)
       .then((tracks) => {
         sendMessages(tracks, body.event);
