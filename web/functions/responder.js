@@ -5,7 +5,9 @@ import fetch from "node-fetch";
 import SpotifyWebApi from "spotify-web-api-node";
 import YoutubeMusicApi from "youtube-music-api";
 
-const wc = new WebClient(process.env.SLACK_TOKEN);
+const SLACK_TOKEN = process.env.SLACK_TOKEN;
+
+const wc = new WebClient(SLACK_TOKEN);
 const {
   KID: kid,
   ISS: iss,
@@ -62,8 +64,7 @@ async function handleLinkShared(event, token) {
 
 async function handleYoutubeRequest(event, url) {
   console.log(`Received youtube request: ${JSON.stringify(event)}`);
-  console.log(event.user);
-  const user = await wc.users.info({ user: event.user });
+  const user = await wc.users.info({ user: event.user, token: SLACK_TOKEN });
   const {
     name: username,
     profile: { image_original: avatar_url },
@@ -80,7 +81,7 @@ async function handleYoutubeRequest(event, url) {
   const appleMusicApi = new AppleMusicAPI();
   const appleMusicLink = await appleMusicApi.search(`${name} ${artist}`);
   wc.chat.postMessage({
-    token: process.env.SLACK_TOKEN,
+    token: SLACK_TOKEN,
     channel: event.channel,
     thread_ts: event.message_ts,
     text: appleMusicLink,
@@ -90,7 +91,7 @@ async function handleYoutubeRequest(event, url) {
   // .catch(console.log);
 
   wc.chat.postMessage({
-    token: process.env.SLACK_TOKEN,
+    token: SLACK_TOKEN,
     channel: event.channel,
     thread_ts: event.message_ts,
     text: spotifyLink,
@@ -120,7 +121,7 @@ async function handleSpotifyRequest(event, url) {
   const appleMusicLink = await appleMusicApi.search(`${name} ${artist}`);
 
   wc.chat.postMessage({
-    token: process.env.SLACK_TOKEN,
+    token: SLACK_TOKEN,
     channel: event.channel,
     thread_ts: event.message_ts,
     text: youtubeLink,
@@ -130,7 +131,7 @@ async function handleSpotifyRequest(event, url) {
   // .catch(console.log);
 
   wc.chat.postMessage({
-    token: process.env.SLACK_TOKEN,
+    token: SLACK_TOKEN,
     channel: event.channel,
     thread_ts: event.message_ts,
     text: appleMusicLink,
@@ -166,7 +167,7 @@ async function handleAppleMusicRequest(event, url) {
   const spotifyLink = await spotifyApi.search(`${name} artist:${artist}`);
 
   wc.chat.postMessage({
-    token: process.env.SLACK_TOKEN,
+    token: SLACK_TOKEN,
     channel: event.channel,
     thread_ts: event.message_ts,
     text: youtubeLink,
@@ -175,7 +176,7 @@ async function handleAppleMusicRequest(event, url) {
   });
 
   wc.chat.postMessage({
-    token: process.env.SLACK_TOKEN,
+    token: SLACK_TOKEN,
     channel: event.channel,
     thread_ts: event.message_ts,
     text: spotifyLink,
