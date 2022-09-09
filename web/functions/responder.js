@@ -62,8 +62,8 @@ async function handleLinkShared(event, token) {
 
 async function handleYoutubeRequest(event, url) {
   console.log(`Received youtube request: ${JSON.stringify(event)}`);
+  console.log(event.user);
   const user = await wc.users.info({ user: event.user });
-  console.log(`if it doesn't get here it's a problem`);
   const {
     name: username,
     profile: { image_original: avatar_url },
