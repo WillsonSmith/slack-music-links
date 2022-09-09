@@ -72,6 +72,11 @@ async function handleYoutubeRequest(event, url) {
   const trackIdentifier = url.searchParams.get(`v`);
 
   const api = new YouTubeMusicAPI();
+  console.log(`promise 4 yt`);
+  api.getTrack(trackIdentifier).then((data) => {
+    console.log(data);
+  });
+  console.log(`await 4 yt`);
   const { name, artist, album } = await api.getTrack(trackIdentifier);
   const spotifyApi = new SpotifyAPI();
   spotifyApi
