@@ -32,8 +32,11 @@ export async function handler(requestEvent) {
       };
     }
     /*
-
-*/
+    getUrl(event)
+      .then(searchForTrack)
+      .then(getLinks)
+      .then(postMessage)
+    */
 
     const { event, token } = body;
     if (event) {
