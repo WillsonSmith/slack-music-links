@@ -246,7 +246,7 @@ class YouTubeMusicAPI {
     return new Promise((resolve, reject) => {
       this.api.initalize().then(() => {
         // await this.api.initalize();
-        const result = this.api.search(id, `song`).then((result) => {
+        this.api.search(id, `song`).then((result) => {
           console.log(`yt search`);
           const song = result.content[0];
           const {
@@ -254,6 +254,7 @@ class YouTubeMusicAPI {
             artist: { name: artist },
             album,
           } = song;
+          console.log(name, artist, album, `about to resolve`);
           resolve({ name, artist, album });
         });
       });
