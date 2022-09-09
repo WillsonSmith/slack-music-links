@@ -1,5 +1,4 @@
 import { Handler } from "@netlify/functions";
-
 import { WebClient } from "@slack/web-api";
 import jwt from "jsonwebtoken";
 import fetch from "node-fetch";
@@ -42,7 +41,10 @@ const handler: Handler = async (requestEvent) => {
       .then((tracks) => {
         sendMessages(tracks, body.event);
       })
-      .catch(console.log);
+      .catch(console.log)
+      .finally(() => {
+        console.log(`Done`);
+      });
 
     return {
       statusCode: 200,
@@ -129,16 +131,16 @@ async function findTrack({ title, artist, service }) {
 
 async function getTrack({ id, service }) {
   if (service === `spotify`) {
-    const spotifyApi = new SpotifyAPI();
-    return spotifyApi.getTrack(id);
+    const api = new SpotifyAPI();
+    return api.getTrack(id);
   }
   if (service === `apple`) {
-    const appleMusicApi = new AppleMusicAPI();
-    return appleMusicApi.getTrack(id);
+    const api = new AppleMusicAPI();
+    return api.getTrack(id);
   }
   if (service === `youtube`) {
-    const youtubeMusicApi = new YoutubeMusicAPI();
-    return youtubeMusicApi.getTrack(id);
+    const api = new YoutubeMusicAPI();
+    return api.getTrack(id);
   }
 }
 
@@ -230,7 +232,9 @@ class AppleMusicAPI {
       const { attributes } = track;
       const { name: title, artistName: artist } = attributes;
       return { title, artist, from: `apple music` };
-    } catch (error) {}
+    } catch (error) {
+      console.log(`Failed to get track from Apple Music`, error);
+    }
   }
 
   async search(query) {
