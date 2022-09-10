@@ -101,7 +101,8 @@ function getServiceFromUrl(url: URL): string {
 }
 function getTrackId(service: string, url: URL): string {
   if (service === `spotify`) return url.pathname.split(`/`)[2];
-  if (service === `apple`) return url.searchParams.get(`i`);
+  if (service === `apple`)
+    return url.searchParams.get(`i`) || url.pathname.split(`/`).pop();
   if (service === `youtube`) return url.searchParams.get(`v`);
 }
 
