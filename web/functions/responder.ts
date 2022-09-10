@@ -35,6 +35,16 @@ const handler: Handler = async (requestEvent) => {
       };
     }
 
+    const slack = new WebClient(SLACK_TOKEN);
+    console.log(`check`);
+    try {
+      const { user } = await slack.users.info({ user: body.event.user });
+      if (user.is_bot) return { statusCode: 200, body: `` };
+    } catch (error) {
+      console.log(`no user`);
+      return { statusCode: 200, body: `` };
+    }
+
     const url = getUrl(body.event);
     const service = getServiceFromUrl(url);
     const trackId = getTrackId(service, url);
@@ -42,7 +52,7 @@ const handler: Handler = async (requestEvent) => {
     await getTrack({ id: trackId, service })
       .then(findTracks)
       .then((tracks) => {
-        sendMessages(tracks, body.event);
+        sendMessages(tracks, body.event, slack);
       })
       .catch(console.log)
       .finally(() => {
@@ -58,8 +68,7 @@ const handler: Handler = async (requestEvent) => {
   }
 };
 
-async function sendMessages(urls, event) {
-  const slack = new WebClient(SLACK_TOKEN);
+async function sendMessages(urls, event, slack) {
   slack.users
     .info({ user: event.user })
     .then(({ user }) => {
