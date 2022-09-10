@@ -49,7 +49,7 @@ const handler: Handler = async (requestEvent) => {
     const service = getServiceFromUrl(url);
     const trackId = getTrackId(service, url);
 
-    await getTrack({ id: trackId, service })
+    getTrack({ id: trackId, service })
       .then(findTracks)
       .then((tracks) => {
         sendMessages(tracks, body.event, slack);
@@ -59,6 +59,9 @@ const handler: Handler = async (requestEvent) => {
         console.log(`Done`);
       });
 
+    let t = new Promise((resolve, reject) => {});
+    setTimeout(() => Promise.resolve(t), 1000);
+    await t;
     return {
       statusCode: 200,
       body: JSON.stringify({ hello: `world` }),
@@ -68,7 +71,7 @@ const handler: Handler = async (requestEvent) => {
   }
 };
 
-async function sendMessages(urls, event, slack) {
+function sendMessages(urls, event, slack) {
   slack.users
     .info({ user: event.user })
     .then(({ user }) => {
@@ -112,7 +115,7 @@ function getTrackId(service: string, url: URL): string {
   if (service === `youtube`) return url.searchParams.get(`v`);
 }
 
-async function findTracks({ title, artist, from }) {
+function findTracks({ title, artist, from }) {
   const tracksToFind = [`spotify`, `apple`, `youtube`].filter(
     (service) => service !== from
   );
@@ -121,7 +124,7 @@ async function findTracks({ title, artist, from }) {
   );
 }
 
-async function findTrack({ title, artist, service }) {
+function findTrack({ title, artist, service }) {
   return new Promise((resolve, reject) => {
     if (service === `spotify`) {
       const spotifyApi = new SpotifyAPI();
@@ -141,7 +144,7 @@ async function findTrack({ title, artist, service }) {
   });
 }
 
-async function getTrack({ id, service }) {
+function getTrack({ id, service }) {
   if (service === `spotify`) {
     const api = new SpotifyAPI();
     return api.getTrack(id);
