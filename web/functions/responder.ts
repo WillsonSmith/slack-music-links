@@ -58,14 +58,6 @@ const handler: Handler = async (requestEvent) => {
       .finally(() => {
         console.log(`Done`);
       });
-
-    let t = new Promise((resolve, reject) => {});
-    setTimeout(() => Promise.resolve(t), 1000);
-    await t;
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ hello: `world` }),
-    };
   } catch (error) {
     console.log(error);
   }
