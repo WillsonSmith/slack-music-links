@@ -1,17 +1,7 @@
 .DS_Store
 .env
 node_modules/
-web/dist/
-extension/dist/
 .cache/
 
 # Local Netlify folder
 .netlify
-
-
-chrome-extension-v0.2
-  chrome-extensions
-  establish-websocket
-* main
-  official-extension-branch
-  test-runner

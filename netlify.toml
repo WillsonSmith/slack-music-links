@@ -1,12 +1,8 @@
 [build]
-  publish = "web/dist"
-  command = "npm run web:build:prod"
-  functions = "./web/functions"
+  publish = "web/"
+  command = ""
+  functions = "./functions"
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
-  status = 200
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
   status = 200
