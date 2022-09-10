@@ -36,9 +36,9 @@ const handler: Handler = async (requestEvent) => {
     }
 
     const slack = new WebClient(SLACK_TOKEN);
-    console.log(`check`);
     try {
       const { user } = await slack.users.info({ user: body.event.user });
+      console.log(user, `user`);
       if (user.is_bot) return { statusCode: 200, body: `` };
     } catch (error) {
       console.log(`no user`);
@@ -49,44 +49,42 @@ const handler: Handler = async (requestEvent) => {
     const service = getServiceFromUrl(url);
     const trackId = getTrackId(service, url);
 
-    getTrack({ id: trackId, service })
+    await getTrack({ id: trackId, service })
       .then(findTracks)
       .then((tracks) => {
-        sendMessages(tracks, body.event, slack);
+        return sendMessages(tracks, body.event, slack);
       })
       .catch(console.log)
       .finally(() => {
         console.log(`Done`);
       });
+
+    return { statusCode: 200, body: `` };
   } catch (error) {
     console.log(error);
   }
 };
 
-function sendMessages(urls, event, slack) {
-  slack.users
-    .info({ user: event.user })
-    .then(({ user }) => {
-      const { channel } = event;
-      const { name: username } = user;
-      const {
-        profile: { image_original: avatar },
-      } = user;
+async function sendMessages(urls, event, slack) {
+  const { user } = await slack.users.info({ user: event.user });
+  const { channel } = event;
+  const { name: username } = user;
+  const {
+    profile: { image_original: avatar },
+  } = user;
 
-      for (const message of urls) {
-        slack.chat
-          .postMessage({
-            channel,
-            icon_url: avatar,
-            text: message,
-            thread_ts: event.message_ts,
-            token: SLACK_TOKEN,
-            username,
-          })
-          .catch(console.log);
-      }
+  return Promise.allSettled(
+    urls.map((message) => {
+      return slack.chat.postMessage({
+        channel,
+        icon_url: avatar,
+        text: message,
+        thread_ts: event.message_ts,
+        token: SLACK_TOKEN,
+        username,
+      });
     })
-    .catch(console.log);
+  );
 }
 
 function getUrl(event): URL {
