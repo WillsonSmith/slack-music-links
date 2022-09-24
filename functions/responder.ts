@@ -18,28 +18,28 @@ const {
 } = process.env;
 
 const handler: Handler = async (requestEvent) => {
-  if (requestEvent?.queryStringParameters?.url) {
-    const url = new URL(requestEvent.queryStringParameters.url);
-    console.log(url, "URL");
-    const service = getServiceFromUrl(url);
-    const trackId = getTrackId(service, url);
-    const tracks = await getTrack({ id: trackId, service })
-      .then(findTracks)
-      .then((tracks: [string]) => {
-        let urls = {};
-        for (const track of tracks) {
-          const url = new URL(track);
-          const service = getServiceFromUrl(url);
-          urls[service] = url.href;
-        }
-        return urls;
-      });
-    return {
-      statusCode: 200,
-      body: JSON.stringify(tracks),
-    };
-  }
   try {
+    if (requestEvent?.queryStringParameters?.url) {
+      const url = new URL(requestEvent.queryStringParameters.url);
+      const service = getServiceFromUrl(url);
+      const trackId = getTrackId(service, url);
+      const tracks = await getTrack({ id: trackId, service })
+        .then(findTracks)
+        .then((tracks: [string]) => {
+          let urls = {};
+          for (const track of tracks) {
+            const url = new URL(track);
+            const service = getServiceFromUrl(url);
+            urls[service] = url.href;
+          }
+          return urls;
+        });
+      return {
+        statusCode: 200,
+        body: JSON.stringify(tracks),
+      };
+    }
+
     if (!requestEvent.body) {
       return {
         statusCode: 400,
@@ -82,6 +82,7 @@ const handler: Handler = async (requestEvent) => {
 
     return { statusCode: 200, body: `` };
   } catch (error) {
+    return { statusCode: 500, body: error.toString() };
     console.log(error);
   }
 };
